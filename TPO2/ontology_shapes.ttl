@@ -1,0 +1,76 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix mus:  <http://example.org/musica/> .
+
+mus:OntologiaMusicalShape
+    a sh:NodeShape ;
+
+    # Debe tener al menos un título, uno por idioma
+    sh:property [
+        sh:path        dct:title ;
+        sh:minCount    1 ;
+        sh:uniqueLang  true ;
+        sh:datatype    rdf:langString ;
+        sh:severity    sh:Warning ;
+        sh:message     "La ontología debe tener al menos un dct:title con language tag único por idioma" ;
+        sh:description "Requiere mínimo 1 título, sin repetir idioma, con datatype rdf:langString (ej. 'Música'@es)" ;
+    ] ;
+
+    # Debe tener exactamente una descripción
+    sh:property [
+        sh:path        dct:description ;
+        sh:minCount    1 ;
+        sh:uniqueLang  true ;
+        sh:datatype    rdf:langString ;
+        sh:severity    sh:Warning ;
+        sh:message     "La ontología debe tener al menos una dct:description con language tag" ;
+        sh:description "Documenta el propósito de la ontología en al menos un idioma" ;
+    ] ;
+
+    # Debe declarar su versión
+    sh:property [
+        sh:path        owl:versionInfo ;
+        sh:minCount    1 ;
+        sh:maxCount    1 ;
+        sh:datatype    xsd:string ;
+        sh:severity    sh:Warning ;
+        sh:message     "La ontología debe declarar exactamente un owl:versionInfo" ;
+        sh:description "Permite rastrear cambios y evolución del vocabulario a lo largo del tiempo" ;
+    ] ;
+
+    # Debe declarar el namespace preferido
+    sh:property [
+        sh:path        vann:preferredNamespaceUri ;
+        sh:minCount    1 ;
+        sh:maxCount    1 ;
+        sh:datatype    xsd:string ;
+        sh:severity    sh:Warning ;
+        sh:message     "La ontología debe declarar exactamente un vann:preferredNamespaceUri" ;
+        sh:description "Facilita la reutilización del vocabulario por otros sistemas y herramientas" ;
+    ] ;
+
+    # Debe declarar el prefijo preferido
+    sh:property [
+        sh:path        vann:preferredNamespacePrefix ;
+        sh:minCount    1 ;
+        sh:maxCount    1 ;
+        sh:datatype    xsd:string ;
+        sh:severity    sh:Warning ;
+        sh:message     "La ontología debe declarar exactamente un vann:preferredNamespacePrefix" ;
+        sh:description "Define el prefijo canónico del vocabulario, por ejemplo 'mus'" ;
+    ] ;
+
+    # Debe tener al menos un creador
+    sh:property [
+        sh:path        dct:creator ;
+        sh:minCount    1 ;
+        sh:severity    sh:Warning ;
+        sh:message     "La ontología debe declarar al menos un dct:creator" ;
+        sh:description "Identifica la autoría del vocabulario para atribución y contacto" ;
+    ] ;
+
+    sh:targetClass owl:Ontology .

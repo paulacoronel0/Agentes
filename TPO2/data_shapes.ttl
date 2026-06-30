@@ -1,0 +1,121 @@
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix mus:    <http://example.org/musica/> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <https://schema.org/> .
+@prefix dc:     <http://purl.org/dc/elements/1.1/> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+
+# ─────────────────────────────────────────────
+#  DATA SHAPE 1: instancias de Cancion
+# ─────────────────────────────────────────────
+mus:CancionShape
+    a sh:NodeShape ;
+    sh:property [
+        sh:path        dc:title ;
+        sh:minCount    1 ;
+        sh:maxCount    1 ;
+        sh:datatype    xsd:string ;
+        sh:minLength   1 ;
+        sh:severity    sh:Violation ;
+        sh:message     "Una Cancion debe tener exactamente un dc:title no vacío de tipo xsd:string" ;
+        sh:description "Valida presencia, unicidad y tipo del título de la canción" ;
+    ] ;
+    sh:property [
+        sh:path        schema:genre ;
+        sh:minCount    1 ;
+        sh:maxCount    1 ;
+        sh:datatype    xsd:string ;
+        sh:in          ( "Pop" "Rock" "Electropop" "Jazz" "Classical" "Hip-Hop" ) ;
+        sh:severity    sh:Violation ;
+        sh:message     "Una Cancion debe tener exactamente un genre perteneciente al vocabulario controlado" ;
+        sh:description "Valida presencia, unicidad y valor permitido del género musical" ;
+    ] ;
+    sh:property [
+        sh:path        mus:anioLanzamiento ;
+        sh:minCount    1 ;
+        sh:maxCount    1 ;
+        sh:datatype    xsd:gYear ;
+        sh:severity    sh:Violation ;
+        sh:message     "Una Cancion debe tener exactamente un anioLanzamiento de tipo xsd:gYear" ;
+        sh:description "Valida presencia, unicidad y tipo del año de lanzamiento de la canción" ;
+    ] ;
+    sh:property [
+        sh:path        schema:inAlbum ;
+        sh:minCount    1 ;
+        sh:class       mus:Album ;
+        sh:severity    sh:Violation ;
+        sh:message     "Una Cancion debe pertenecer a al menos un Album de tipo mus:Album" ;
+        sh:description "Valida que la canción esté vinculada a al menos un álbum correctamente tipado" ;
+    ] ;
+    sh:property [
+        sh:path        mus:artista ;
+        sh:minCount    1 ;
+        sh:class       mus:Artista ;
+        sh:severity    sh:Violation ;
+        sh:message     "Una Cancion debe tener al menos un artista de tipo mus:Artista" ;
+        sh:description "Valida que el nodo referenciado como artista esté correctamente tipado" ;
+    ] ;
+    sh:targetClass mus:Cancion .
+
+# ─────────────────────────────────────────────
+#  DATA SHAPE 2: instancias de Album
+# ─────────────────────────────────────────────
+mus:AlbumShape
+    a sh:NodeShape ;
+    sh:property [
+        sh:path        dc:title ;
+        sh:minCount    1 ;
+        sh:maxCount    1 ;
+        sh:datatype    xsd:string ;
+        sh:minLength   1 ;
+        sh:severity    sh:Violation ;
+        sh:message     "Un Album debe tener exactamente un dc:title no vacío de tipo xsd:string" ;
+        sh:description "Valida presencia, unicidad y tipo del título del álbum" ;
+    ] ;
+    sh:property [
+        sh:path        mus:anioLanzamiento ;
+        sh:minCount    1 ;
+        sh:maxCount    1 ;
+        sh:datatype    xsd:gYear ;
+        sh:severity    sh:Violation ;
+        sh:message     "Un Album debe tener exactamente un anioLanzamiento de tipo xsd:gYear" ;
+        sh:description "Valida presencia, unicidad y tipo del año de lanzamiento del álbum" ;
+    ] ;
+    sh:targetClass mus:Album .
+
+# ─────────────────────────────────────────────
+#  DATA SHAPE 3: instancias de Artista
+# ─────────────────────────────────────────────
+mus:ArtistaShape
+    a sh:NodeShape ;
+    sh:property [
+        sh:path        foaf:givenName ;
+        sh:minCount    1 ;
+        sh:maxCount    1 ;
+        sh:datatype    xsd:string ;
+        sh:minLength   1 ;
+        sh:severity    sh:Violation ;
+        sh:message     "Un Artista debe tener exactamente un foaf:givenName no vacío de tipo xsd:string" ;
+        sh:description "Valida presencia, unicidad y tipo del nombre de pila del artista" ;
+    ] ;
+    sh:property [
+        sh:path        foaf:familyName ;
+        sh:minCount    1 ;
+        sh:maxCount    1 ;
+        sh:datatype    xsd:string ;
+        sh:minLength   1 ;
+        sh:severity    sh:Violation ;
+        sh:message     "Un Artista debe tener exactamente un foaf:familyName no vacío de tipo xsd:string" ;
+        sh:description "Valida presencia, unicidad y tipo del apellido del artista" ;
+    ] ;
+    sh:property [
+        sh:path        mus:anioNacimiento ;
+        sh:minCount    1 ;
+        sh:maxCount    1 ;
+        sh:datatype    xsd:gYear ;
+        sh:severity    sh:Violation ;
+        sh:message     "Un Artista debe tener exactamente un anioNacimiento de tipo xsd:gYear" ;
+        sh:description "Valida presencia, unicidad y tipo del año de nacimiento del artista" ;
+    ] ;
+    sh:targetClass mus:Artista .

@@ -1,0 +1,386 @@
+================================================================
+  PRUEBAS PARA data_shapes.ttl  (archivo: musica.ttl)
+================================================================
+Shapes validadas: CancionShape | AlbumShape | ArtistaShape
+Severidad de todas las restricciones: Violation (🟥)
+
+Antes de cada prueba:
+  cp musica.ttl musica_backup.ttl
+
+Después de cada prueba:
+  cp musica_backup.ttl musica.ttl
+
+Ejecutar con:
+  python3 validar.py
+
+================================================================
+PRUEBA D-00 | CASO BASE — Todo válido
+================================================================
+DESCRIPCIÓN:
+  Correr el script sin modificar nada. El dataset original
+  cumple todas las restricciones definidas en data_shapes.ttl.
+
+MODIFICACIÓN EN musica.ttl:
+  Ninguna.
+
+RESULTADO ESPERADO:
+  ✅ Conforms: True — no se encontraron violaciones.
+
+
+================================================================
+PRUEBA D-01 | CancionShape — Falta dc:title  (minCount)
+================================================================
+DESCRIPCIÓN:
+  Una canción no tiene título. Viola sh:minCount 1 sobre dc:title.
+
+MODIFICACIÓN EN musica.ttl:
+  En el nodo mus:c1, borrar la línea:
+    dc:title "Break Free" ;
+
+  Resultado:
+    mus:c1 rdf:type mus:Cancion ;
+          schema:genre "Electropop" ;
+          mus:anioLanzamiento "2014"^^xsd:gYear ;
+          mus:artista mus:a1 ;
+          schema:inAlbum mus:b1 .
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:c1
+         Propiedad    : dc:title
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : Una Cancion debe tener exactamente un dc:title
+                        no vacío de tipo xsd:string
+
+
+================================================================
+PRUEBA D-02 | CancionShape — Título duplicado  (maxCount)
+================================================================
+DESCRIPCIÓN:
+  Una canción tiene dos títulos. Viola sh:maxCount 1 sobre dc:title.
+
+MODIFICACIÓN EN musica.ttl:
+  En el nodo mus:c1, agregar una segunda línea de dc:title:
+    dc:title "Break Free" ;
+    dc:title "Break Free (Remix)" ;
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:c1
+         Propiedad    : dc:title
+         Valor actual : "Break Free (Remix)"
+         Tipo de error: MaxCountConstraintComponent
+         Mensaje      : Una Cancion debe tener exactamente un dc:title
+                        no vacío de tipo xsd:string
+
+
+================================================================
+PRUEBA D-03 | CancionShape — Título vacío  (minLength)
+================================================================
+DESCRIPCIÓN:
+  El título de una canción es un string vacío.
+  Viola sh:minLength 1 sobre dc:title.
+
+MODIFICACIÓN EN musica.ttl:
+  En mus:c1, cambiar:
+    dc:title "Break Free" ;
+  Por:
+    dc:title "" ;
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:c1
+         Propiedad    : dc:title
+         Valor actual : ""
+         Tipo de error: MinLengthConstraintComponent
+         Mensaje      : Una Cancion debe tener exactamente un dc:title
+                        no vacío de tipo xsd:string
+
+
+================================================================
+PRUEBA D-04 | CancionShape — Género fuera del vocabulario  (sh:in)
+================================================================
+DESCRIPCIÓN:
+  El género de una canción no está en la lista permitida.
+  Viola sh:in ("Pop" "Rock" "Electropop" "Jazz" "Classical" "Hip-Hop").
+
+MODIFICACIÓN EN musica.ttl:
+  En mus:c2, cambiar:
+    schema:genre "Pop" ;
+  Por:
+    schema:genre "Reggaeton" ;
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:c2
+         Propiedad    : schema:genre
+         Valor actual : "Reggaeton"
+         Tipo de error: InConstraintComponent
+         Mensaje      : Una Cancion debe tener exactamente un genre
+                        perteneciente al vocabulario controlado
+
+
+================================================================
+PRUEBA D-05 | CancionShape — Falta genre  (minCount)
+================================================================
+DESCRIPCIÓN:
+  Una canción no declara género. Viola sh:minCount 1 sobre schema:genre.
+
+MODIFICACIÓN EN musica.ttl:
+  En mus:c1, borrar la línea:
+    schema:genre "Electropop" ;
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:c1
+         Propiedad    : schema:genre
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : Una Cancion debe tener exactamente un genre
+                        perteneciente al vocabulario controlado
+
+
+================================================================
+PRUEBA D-06 | CancionShape — Año con datatype incorrecto  (datatype)
+================================================================
+DESCRIPCIÓN:
+  El año de lanzamiento de una canción está como string plano
+  en vez de xsd:gYear. Viola sh:datatype xsd:gYear.
+
+MODIFICACIÓN EN musica.ttl:
+  En mus:c1, cambiar:
+    mus:anioLanzamiento "2014"^^xsd:gYear ;
+  Por:
+    mus:anioLanzamiento "2014" ;
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:c1
+         Propiedad    : mus:anioLanzamiento
+         Valor actual : "2014"
+         Tipo de error: DatatypeConstraintComponent
+         Mensaje      : Una Cancion debe tener exactamente un
+                        anioLanzamiento de tipo xsd:gYear
+
+
+================================================================
+PRUEBA D-07 | CancionShape — Falta artista  (minCount)
+================================================================
+DESCRIPCIÓN:
+  Una canción no tiene artista asignado.
+  Viola sh:minCount 1 sobre mus:artista.
+
+MODIFICACIÓN EN musica.ttl:
+  En mus:c1, borrar la línea:
+    mus:artista mus:a1 ;
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:c1
+         Propiedad    : mus:artista
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : Una Cancion debe tener al menos un artista
+                        de tipo mus:Artista
+
+
+================================================================
+PRUEBA D-08 | CancionShape — Artista mal tipado  (sh:class)
+================================================================
+DESCRIPCIÓN:
+  El valor de mus:artista apunta a un nodo que no es de tipo
+  mus:Artista (apunta a un Album). Viola sh:class mus:Artista.
+
+MODIFICACIÓN EN musica.ttl:
+  Agregar un nuevo nodo al final del archivo:
+    mus:c5 rdf:type mus:Cancion ;
+           dc:title "Test Tipo Incorrecto" ;
+           schema:genre "Pop" ;
+           mus:anioLanzamiento "2020"^^xsd:gYear ;
+           mus:artista mus:b1 ;
+           schema:inAlbum mus:b1 .
+
+  (mus:b1 es un Album, no un Artista)
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:c5
+         Propiedad    : mus:artista
+         Valor actual : mus:b1
+         Tipo de error: ClassConstraintComponent
+         Mensaje      : Una Cancion debe tener al menos un artista
+                        de tipo mus:Artista
+
+
+================================================================
+PRUEBA D-09 | CancionShape — Falta inAlbum  (minCount)
+================================================================
+DESCRIPCIÓN:
+  Una canción no está vinculada a ningún álbum.
+  Viola sh:minCount 1 sobre schema:inAlbum.
+
+MODIFICACIÓN EN musica.ttl:
+  En mus:c1, borrar la línea:
+    schema:inAlbum mus:b1 .
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:c1
+         Propiedad    : schema:inAlbum
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : Una Cancion debe pertenecer a al menos un
+                        Album de tipo mus:Album
+
+
+================================================================
+PRUEBA D-10 | AlbumShape — Falta dc:title  (minCount)
+================================================================
+DESCRIPCIÓN:
+  Un álbum no tiene título.
+  Viola sh:minCount 1 sobre dc:title en AlbumShape.
+
+MODIFICACIÓN EN musica.ttl:
+  En mus:b1, borrar la línea:
+    dc:title "My Everything" ;
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:b1
+         Propiedad    : dc:title
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : Un Album debe tener exactamente un dc:title
+                        no vacío de tipo xsd:string
+
+
+================================================================
+PRUEBA D-11 | AlbumShape — Año con datatype incorrecto  (datatype)
+================================================================
+DESCRIPCIÓN:
+  El año de lanzamiento de un álbum usa el tipo incorrecto.
+  Viola sh:datatype xsd:gYear en AlbumShape.
+
+MODIFICACIÓN EN musica.ttl:
+  En mus:b2, cambiar:
+    mus:anioLanzamiento "2013"^^xsd:gYear ;
+  Por:
+    mus:anioLanzamiento "2013"^^xsd:integer ;
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:b2
+         Propiedad    : mus:anioLanzamiento
+         Valor actual : "2013"
+         Tipo de error: DatatypeConstraintComponent
+         Mensaje      : Un Album debe tener exactamente un
+                        anioLanzamiento de tipo xsd:gYear
+
+
+================================================================
+PRUEBA D-12 | ArtistaShape — Falta foaf:familyName  (minCount)
+================================================================
+DESCRIPCIÓN:
+  Un artista no tiene apellido.
+  Viola sh:minCount 1 sobre foaf:familyName en ArtistaShape.
+
+MODIFICACIÓN EN musica.ttl:
+  En mus:a1, borrar la línea:
+    foaf:familyName "Grande" ;
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:a1
+         Propiedad    : foaf:familyName
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : Un Artista debe tener exactamente un
+                        foaf:familyName no vacío de tipo xsd:string
+
+
+================================================================
+PRUEBA D-13 | ArtistaShape — Nombre vacío  (minLength)
+================================================================
+DESCRIPCIÓN:
+  El nombre de pila de un artista es un string vacío.
+  Viola sh:minLength 1 sobre foaf:givenName en ArtistaShape.
+
+MODIFICACIÓN EN musica.ttl:
+  En mus:a2, cambiar:
+    foaf:givenName "Miley" ;
+  Por:
+    foaf:givenName "" ;
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:a2
+         Propiedad    : foaf:givenName
+         Valor actual : ""
+         Tipo de error: MinLengthConstraintComponent
+         Mensaje      : Un Artista debe tener exactamente un
+                        foaf:givenName no vacío de tipo xsd:string
+
+
+================================================================
+PRUEBA D-14 | ArtistaShape — Año de nacimiento incorrecto  (datatype)
+================================================================
+DESCRIPCIÓN:
+  El año de nacimiento de un artista está como xsd:string
+  en vez de xsd:gYear. Viola sh:datatype xsd:gYear.
+
+MODIFICACIÓN EN musica.ttl:
+  En mus:a1, cambiar:
+    mus:anioNacimiento "1993"^^xsd:gYear ;
+  Por:
+    mus:anioNacimiento "1993"^^xsd:string ;
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  🟥 [1] Severidad   : Violation
+         Nodo afectado: mus:a1
+         Propiedad    : mus:anioNacimiento
+         Valor actual : "1993"
+         Tipo de error: DatatypeConstraintComponent
+         Mensaje      : Un Artista debe tener exactamente un
+                        anioNacimiento de tipo xsd:gYear
+
+
+================================================================
+PRUEBA D-15 | MÚLTIPLES VIOLACIONES — Tres errores simultáneos
+================================================================
+DESCRIPCIÓN:
+  Combinar tres errores a la vez para verificar que el reporte
+  los lista todos sin detenerse en el primero
+  (abort_on_first=False ya está configurado en validar.py).
+
+MODIFICACIÓN EN musica.ttl:
+  1. En mus:c1, cambiar genre a uno no permitido:
+       schema:genre "Reggaeton" ;
+
+  2. En mus:a2, borrar el apellido:
+       (eliminar la línea: foaf:familyName "Cyrus" ;)
+
+  3. En mus:b1, borrar el título:
+       (eliminar la línea: dc:title "My Everything" ;)
+
+RESULTADO ESPERADO:
+  ❌ Conforms: False
+  Se encontraron 3 violación(es):
+  🟥 [1] mus:c1  — schema:genre   — InConstraintComponent
+  🟥 [2] mus:a2  — foaf:familyName — MinCountConstraintComponent
+  🟥 [3] mus:b1  — dc:title        — MinCountConstraintComponent
+  (el orden puede variar)

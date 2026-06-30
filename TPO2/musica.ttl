@@ -1,0 +1,36 @@
+@prefix mus: <http://example.org/musica/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <https://schema.org/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+mus:Cancion owl:sameAs schema:MusicRecording .
+mus:Artista owl:sameAs schema:Person .
+mus:Album owl:sameAs schema:MusicAlbum.
+mus:c1 rdf:type mus:Cancion ;
+      dc:title "Break Free" ;
+      schema:genre "Electropop" ;
+      mus:anioLanzamiento "2014"^^xsd:gYear ;
+      mus:artista mus:a1 ;
+      schema:inAlbum mus:b1 .    
+mus:a1 rdf:type mus:Artista ;
+      foaf:givenName "Ariana" ;
+      foaf:familyName "Grande" ;
+      mus:anioNacimiento "1993"^^xsd:gYear .
+mus:b1 rdf:type mus:Album ;
+       dc:title "My Everything" ;
+       mus:anioLanzamiento "2014"^^xsd:gYear .
+mus:c2 rdf:type mus:Cancion ;
+      dc:title "Wrecking Ball" ;
+      schema:genre "Pop" ;
+      mus:anioLanzamiento "2013"^^xsd:gYear ;
+      mus:artista mus:a2 ;
+      schema:inAlbum mus:b2 .
+mus:a2 rdf:type mus:Artista ;
+      foaf:givenName "Miley" ;
+      foaf:familyName "Cyrus" ;
+      mus:anioNacimiento "1992"^^xsd:gYear .
+mus:b2 rdf:type mus:Album ;
+       dc:title "Bangerz" ;
+       mus:anioLanzamiento "2013"^^xsd:gYear .

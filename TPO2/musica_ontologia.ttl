@@ -1,0 +1,16 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix mus:  <http://example.org/musica/> .
+
+<http://example.org/musica/>
+    a owl:Ontology ;
+    dct:title        "Ontología Musical"@es , "Music Ontology"@en ;
+    dct:description  "Vocabulario para describir canciones..."@es ;
+    owl:versionInfo  "1.0.0"^^xsd:string ;
+    vann:preferredNamespaceUri    "http://example.org/musica/"^^xsd:string ;
+    vann:preferredNamespacePrefix "mus"^^xsd:string ;
+    dct:creator      <https://example.org/autor1> .
+    
