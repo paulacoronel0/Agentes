@@ -1,0 +1,305 @@
+================================================================
+  PRUEBAS PARA ontology_shapes.ttl  (archivo: musica_ontologia.ttl)
+================================================================
+Shape validada : OntologiaMusicalShape
+Target         : owl:Ontology
+Severidad de todas las restricciones: Warning (🟨)
+
+IMPORTANTE: A diferencia de las data shapes, aquí todas las
+restricciones tienen sh:severity sh:Warning (no Violation).
+Esto significa que el validador reporta los problemas pero
+sh:conforms puede seguir siendo True en algunos validadores.
+pySHACL trata los Warnings como no-conformes, así que verás
+❌ Conforms: False igual que con las Violations.
+
+Antes de cada prueba:
+  cp musica_ontologia.ttl musica_ontologia_backup.ttl
+
+Después de cada prueba:
+  cp musica_ontologia_backup.ttl musica_ontologia.ttl
+
+Ejecutar con:
+  python3 validar.py
+
+Solo la PRUEBA 2 (Metadatos) es relevante para este archivo.
+
+================================================================
+PRUEBA O-00 | CASO BASE — Todo válido
+================================================================
+DESCRIPCIÓN:
+  Correr el script sin modificar nada. La ontología original
+  cumple todas las restricciones definidas en ontology_shapes.ttl.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  Ninguna.
+
+RESULTADO ESPERADO:
+  ✅ Metadatos válidos: True — no se encontraron violaciones.
+
+
+================================================================
+PRUEBA O-01 | Falta dct:title  (minCount)
+================================================================
+DESCRIPCIÓN:
+  La ontología no declara ningún título.
+  Viola sh:minCount 1 sobre dct:title.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  Borrar la línea completa:
+    dct:title "Ontología Musical"@es , "Music Ontology"@en ;
+
+RESULTADO ESPERADO:
+  ❌ Metadatos válidos: False
+  🟨 [1] Severidad   : Warning
+         Nodo afectado: <http://example.org/musica/>
+         Propiedad    : dct:title
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : La ontología debe tener al menos un dct:title
+                        con language tag único por idioma
+
+
+================================================================
+PRUEBA O-02 | Título sin language tag  (datatype)
+================================================================
+DESCRIPCIÓN:
+  El título existe pero no lleva language tag (@es / @en),
+  por lo que su datatype no es rdf:langString.
+  Viola sh:datatype rdf:langString sobre dct:title.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  Cambiar:
+    dct:title "Ontología Musical"@es , "Music Ontology"@en ;
+  Por:
+    dct:title "Ontología Musical" ;
+
+  (se elimina el @es y se deja solo un título sin tag)
+
+RESULTADO ESPERADO:
+  ❌ Metadatos válidos: False
+  🟨 [1] Severidad   : Warning
+         Nodo afectado: <http://example.org/musica/>
+         Propiedad    : dct:title
+         Valor actual : "Ontología Musical"
+         Tipo de error: DatatypeConstraintComponent
+         Mensaje      : La ontología debe tener al menos un dct:title
+                        con language tag único por idioma
+
+
+================================================================
+PRUEBA O-03 | Títulos con idioma repetido  (uniqueLang)
+================================================================
+DESCRIPCIÓN:
+  Hay dos títulos con el mismo language tag (@es).
+  Viola sh:uniqueLang true sobre dct:title.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  Cambiar:
+    dct:title "Ontología Musical"@es , "Music Ontology"@en ;
+  Por:
+    dct:title "Ontología Musical"@es , "Vocabulario Musical"@es ;
+
+  (dos títulos en español, ninguno en inglés)
+
+RESULTADO ESPERADO:
+  ❌ Metadatos válidos: False
+  🟨 [1] Severidad   : Warning
+         Nodo afectado: <http://example.org/musica/>
+         Propiedad    : dct:title
+         Valor actual : "Vocabulario Musical"@es
+         Tipo de error: UniqueLangConstraintComponent
+         Mensaje      : La ontología debe tener al menos un dct:title
+                        con language tag único por idioma
+
+
+================================================================
+PRUEBA O-04 | Falta dct:description  (minCount)
+================================================================
+DESCRIPCIÓN:
+  La ontología no tiene descripción.
+  Viola sh:minCount 1 sobre dct:description.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  Borrar la línea:
+    dct:description "Vocabulario para describir canciones..."@es ;
+
+RESULTADO ESPERADO:
+  ❌ Metadatos válidos: False
+  🟨 [1] Severidad   : Warning
+         Nodo afectado: <http://example.org/musica/>
+         Propiedad    : dct:description
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : La ontología debe tener al menos una
+                        dct:description con language tag
+
+
+================================================================
+PRUEBA O-05 | Descripción sin language tag  (datatype)
+================================================================
+DESCRIPCIÓN:
+  La descripción existe pero sin tag de idioma, por lo que
+  su datatype no es rdf:langString.
+  Viola sh:datatype rdf:langString sobre dct:description.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  Cambiar:
+    dct:description "Vocabulario para describir canciones..."@es ;
+  Por:
+    dct:description "Vocabulario para describir canciones..." ;
+
+RESULTADO ESPERADO:
+  ❌ Metadatos válidos: False
+  🟨 [1] Severidad   : Warning
+         Nodo afectado: <http://example.org/musica/>
+         Propiedad    : dct:description
+         Valor actual : "Vocabulario para describir canciones..."
+         Tipo de error: DatatypeConstraintComponent
+         Mensaje      : La ontología debe tener al menos una
+                        dct:description con language tag
+
+
+================================================================
+PRUEBA O-06 | Falta owl:versionInfo  (minCount)
+================================================================
+DESCRIPCIÓN:
+  La ontología no declara número de versión.
+  Viola sh:minCount 1 sobre owl:versionInfo.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  Borrar la línea:
+    owl:versionInfo "1.0.0"^^xsd:string ;
+
+RESULTADO ESPERADO:
+  ❌ Metadatos válidos: False
+  🟨 [1] Severidad   : Warning
+         Nodo afectado: <http://example.org/musica/>
+         Propiedad    : owl:versionInfo
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : La ontología debe declarar exactamente un
+                        owl:versionInfo
+
+
+================================================================
+PRUEBA O-07 | versionInfo duplicado  (maxCount)
+================================================================
+DESCRIPCIÓN:
+  La ontología declara dos versiones distintas.
+  Viola sh:maxCount 1 sobre owl:versionInfo.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  Cambiar:
+    owl:versionInfo "1.0.0"^^xsd:string ;
+  Por:
+    owl:versionInfo "1.0.0"^^xsd:string ;
+    owl:versionInfo "2.0.0"^^xsd:string ;
+
+RESULTADO ESPERADO:
+  ❌ Metadatos válidos: False
+  🟨 [1] Severidad   : Warning
+         Nodo afectado: <http://example.org/musica/>
+         Propiedad    : owl:versionInfo
+         Valor actual : "2.0.0"
+         Tipo de error: MaxCountConstraintComponent
+         Mensaje      : La ontología debe declarar exactamente un
+                        owl:versionInfo
+
+
+================================================================
+PRUEBA O-08 | Falta vann:preferredNamespaceUri  (minCount)
+================================================================
+DESCRIPCIÓN:
+  La ontología no declara su URI de namespace preferida.
+  Viola sh:minCount 1 sobre vann:preferredNamespaceUri.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  Borrar la línea:
+    vann:preferredNamespaceUri "http://example.org/musica/"^^xsd:string ;
+
+RESULTADO ESPERADO:
+  ❌ Metadatos válidos: False
+  🟨 [1] Severidad   : Warning
+         Nodo afectado: <http://example.org/musica/>
+         Propiedad    : vann:preferredNamespaceUri
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : La ontología debe declarar exactamente un
+                        vann:preferredNamespaceUri
+
+
+================================================================
+PRUEBA O-09 | Falta vann:preferredNamespacePrefix  (minCount)
+================================================================
+DESCRIPCIÓN:
+  La ontología no declara su prefijo canónico.
+  Viola sh:minCount 1 sobre vann:preferredNamespacePrefix.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  Borrar la línea:
+    vann:preferredNamespacePrefix "mus"^^xsd:string ;
+
+RESULTADO ESPERADO:
+  ❌ Metadatos válidos: False
+  🟨 [1] Severidad   : Warning
+         Nodo afectado: <http://example.org/musica/>
+         Propiedad    : vann:preferredNamespacePrefix
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : La ontología debe declarar exactamente un
+                        vann:preferredNamespacePrefix
+
+
+================================================================
+PRUEBA O-10 | Falta dct:creator  (minCount)
+================================================================
+DESCRIPCIÓN:
+  La ontología no declara ningún creador/autor.
+  Viola sh:minCount 1 sobre dct:creator.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  Borrar la línea:
+    dct:creator <https://example.org/autor1> .
+
+RESULTADO ESPERADO:
+  ❌ Metadatos válidos: False
+  🟨 [1] Severidad   : Warning
+         Nodo afectado: <http://example.org/musica/>
+         Propiedad    : dct:creator
+         Valor actual : (sin valor)
+         Tipo de error: MinCountConstraintComponent
+         Mensaje      : La ontología debe declarar al menos un
+                        dct:creator
+
+
+================================================================
+PRUEBA O-11 | MÚLTIPLES VIOLACIONES — Tres errores simultáneos
+================================================================
+DESCRIPCIÓN:
+  Combinar tres errores a la vez para verificar que el reporte
+  los lista todos sin detenerse en el primero.
+
+MODIFICACIÓN EN musica_ontologia.ttl:
+  1. Borrar el título:
+       (eliminar: dct:title "Ontología Musical"@es , "Music Ontology"@en ;)
+
+  2. Borrar la versión:
+       (eliminar: owl:versionInfo "1.0.0"^^xsd:string ;)
+
+  3. Borrar el creador:
+       (eliminar: dct:creator <https://example.org/autor1> .)
+
+  El archivo queda así:
+    <http://example.org/musica/>
+        a owl:Ontology ;
+        dct:description  "Vocabulario para describir canciones..."@es ;
+        vann:preferredNamespaceUri    "http://example.org/musica/"^^xsd:string ;
+        vann:preferredNamespacePrefix "mus"^^xsd:string .
+
+RESULTADO ESPERADO:
+  ❌ Metadatos válidos: False
+  Se encontraron 3 violación(es):
+  🟨 [1] <http://example.org/musica/> — dct:title   — MinCountConstraintComponent
+  🟨 [2] <http://example.org/musica/> — owl:versionInfo — MinCountConstraintComponent
+  🟨 [3] <http://example.org/musica/> — dct:creator — MinCountConstraintComponent
+  (el orden puede variar)
