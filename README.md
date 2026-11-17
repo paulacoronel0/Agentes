@@ -71,6 +71,3 @@ Aunque SHACL es robusto para validación sintáctica, presenta ciertas limitacio
 * Cortés, C., et al. (2020). Is shacl suitable for data quality assessment?.
 * Pareti, P., & Konstantinidis, G. (2021). A review of shacl: From data validation to schema reasoning for rdf graphs.
 
-```
-
-```
